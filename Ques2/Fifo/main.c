@@ -9,13 +9,13 @@
 int main()
 {
     pid_t pid = fork();
-    char * argv1[]={"/Users/vidurgoel/Exam/p1",NULL};
-    char * argv[]={"/Users/vidurgoel/Exam/p2",NULL};
+    char * argv1[]={"./p1",NULL};
+    char * argv[]={"./p2",NULL};
     if (pid==0){
-        execv("/Users/vidurgoel/Exam/p1",argv);
+        execv("./p1",argv);
     }
     else{
-        execv("/Users/vidurgoel/Exam/p2",argv);
+        execv("./p2",argv);
     }
     
     return 0;

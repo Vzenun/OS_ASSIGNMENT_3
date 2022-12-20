@@ -106,6 +106,7 @@ int main(int argc,char * argv[]){
         printf("%d ",i+1);
         string_printing(string_arr[i]);
     }
+    printf("\n");
     char ** b=malloc(5*(sizeof(char)*STRING_LEN));
     ll * b1=malloc(5*(sizeof(ll)));
     ll i=0;
@@ -116,10 +117,12 @@ int main(int argc,char * argv[]){
         int file_descryptor1=open("testfile1",O_WRONLY);
         ll krr=i/5;
         copy_arr(b,string_arr,krr,5);
+        sleep(2);
         write(file_descryptor1, b, 5*(sizeof(char)*STRING_LEN));
         close(file_descryptor1);
         int file_descryptor2 = open("testfile2", O_WRONLY);
         copy_arr2(b1,i,5);
+        sleep(2);
         write(file_descryptor2, b1, 5*sizeof(ll));
         close(file_descryptor2);
         int file_descryptor3 = open("testfile3", O_RDONLY);
@@ -133,6 +136,5 @@ int main(int argc,char * argv[]){
     timediff=( stop.tv_sec - start.tv_sec );
     int timediffn_s=( stop.tv_nsec - start.tv_nsec );
     printf("%d\n",timediff);
-    printf("%d",timediffn_s);
     return 0;
 }

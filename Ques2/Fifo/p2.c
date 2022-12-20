@@ -26,8 +26,7 @@ ll STRING_LEN=10;
 
 void string_arr_printing(char ** a,ll len){
     for(ll i=0;i<len;i++){
-        printf("%s",a[i]);
-        printf("%s","\n");
+        printf("%s"," ");
     }
     return;
 }
@@ -39,12 +38,7 @@ int main(int argc,char * argv[]){
         char ** b=malloc(5*sizeof(char)*STRING_LEN);
         read(file_descryptor1,b,5*(sizeof(char)*STRING_LEN));
         close(file_descryptor1);
-        //string_arr_printing(b,5);
-        printf("%s ",b[0]);
-        printf("%s ",b[1]);
-        printf("%s ",b[2]);
-        printf("%s ",b[3]);
-        printf("%s",b[4]);
+        string_arr_printing(b,5);
         int file_descryptor2 = open("testfile2", O_RDONLY);
         ll * a=malloc(5*(sizeof(ll)));
         read(file_descryptor2,a,5*sizeof(ll));
@@ -59,4 +53,6 @@ int main(int argc,char * argv[]){
         close(file_descryptor3);
         i=a[4]+1;
     }
+    sleep(1);
+    return 0;
 }
