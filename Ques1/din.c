@@ -34,12 +34,14 @@
 //Here philosopher 3 have the fork 3 in it's left and fork 4 in its right
 //Here philosopher 4 have the fork 4 in it's left and fork 0 in its right
 
+int forks[5]={0,0,0,0,0};
 
 //this locks works in such a way that if the one person is in process of picking 
 //up its fork then no other person can start their process of picking up their fork
 
-
 void postingforks(int n){
+    forks[n]=0;
+    forks[(n+1)%5]=0;
     printf("Philosopher %d has released fork %d and fork %d as finished eating\n", n,(n)%5,(n+1)%5);
 }
 
@@ -50,6 +52,22 @@ void eat(int n){
 }
 
 void waitingforks(int n){
+    if(n==4){
+        while(forks[0]==1){
+        }
+        forks[0]=1;
+        while(forks[4]==1){
+        }
+        forks[4]=1;
+    }
+    else{
+        while(forks[n]==1){
+        }
+        forks[n]=1;
+        while(forks[(n+1)%5]==1){
+        }
+        forks[(n+1)%5]=1;
+    }
     printf("Philosopher %d has picked forks %d and fork %d for eating\n", n,(n)%5,(n+1)%5);
 }
 

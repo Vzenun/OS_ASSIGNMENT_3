@@ -1,6 +1,6 @@
 //Vidur Goel Question Number 1
 
-//Variant a of part a using the strict utilisation of the shared resources
+//Variant b of the part a using the semaphore
 
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -25,7 +25,7 @@
 #include <netinet/in.h>
 # define ll int
 
-pthread_mutex_t forks[5];
+sem_t forks[5];
 
 //There are fork 1 and fork 2 and fork 3 and fork 4 and fork 0
 
@@ -35,24 +35,24 @@ pthread_mutex_t forks[5];
 //Here philosopher 3 have the fork 3 in it's left and fork 4 in its right
 //Here philosopher 4 have the fork 4 in it's left and fork 0 in its right
 
-pthread_mutex_t lock;
+sem_t lock;
 
 //this locks works in such a way that if the one person is in process of picking 
 //up its fork then no other person can start their process of picking up their fork
 
 void process_of_picking_initiated(int n){
-    pthread_mutex_lock(&lock);
+    sem_wait(&lock);
     printf("Philosopher %d has initiated the process of picking up the fork %d and fork %d and thus locked the lock\n", n,(n)%5,(n+1)%5);
 }
 
 void process_of_picking_finished(int n){
-    pthread_mutex_unlock(&lock);
+    sem_post(&lock);
     printf("Philosopher %d has finished the process of picking up the fork %d and fork %d and thus unlocked the lock\n", n,(n)%5,(n+1)%5);
 }
 
 void postingforks(int n){
-    pthread_mutex_unlock(&forks[n]);
-    pthread_mutex_unlock(&forks[(n+1)%5]);
+    sem_post(&forks[n]);
+    sem_post(&forks[(n+1)%5]);
     printf("Philosopher %d has released fork %d and fork %d resources\n", n,(n)%5,(n+1)%5);
 }
 
@@ -63,8 +63,8 @@ void eat(int n){
 }
 
 void waitingforks(int n){
-    pthread_mutex_lock(&forks[n]);
-    pthread_mutex_lock(&forks[(n+1)%5]);
+    sem_wait(&forks[n]);
+    sem_wait(&forks[(n+1)%5]);
     printf("Philosopher %d has locked forks %d and fork %d resources for eating\n", n,(n)%5,(n+1)%5);
 }
 
@@ -88,10 +88,10 @@ int main(int argc,char * argv[]){
 
 	pthread_t threadID[5];
 
-    pthread_mutex_init(&lock,NULL);
+    sem_init(&lock,0,1);
 
 	for(ll i=0;i<5;i++){
-		pthread_mutex_init(&forks[i],NULL);
+		sem_init(&forks[i],0,1);
 	}
 	
 	for(ll i=0;i<5;i++){
