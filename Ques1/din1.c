@@ -1,4 +1,6 @@
-//Vidur Goel Question Number 2.b
+//Vidur Goel Question Number 1
+
+//Variant a of part a using the strict utilisation of the shared resources
 
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -23,17 +25,15 @@
 #include <netinet/in.h>
 # define ll int
 
-sem_t forks[5];
-sem_t bowls[2];
-ll bowls_phil[5]={0,0,0,0,0};
+pthread_mutex_t forks[5];
 
-//There are fork 1 and fork 2 and fork 3 and fork 4 and fork 5
+//There are fork 1 and fork 2 and fork 3 and fork 4 and fork 0
 
+//Here philosopher 0 have the fork 0 in it's left and fork 1 in its right
 //Here philosopher 1 have the fork 1 in it's left and fork 2 in its right
 //Here philosopher 2 have the fork 2 in it's left and fork 3 in its right
 //Here philosopher 3 have the fork 3 in it's left and fork 4 in its right
-//Here philosopher 4 have the fork 4 in it's left and fork 5 in its right
-//Here philosopher 5 have the fork 5 in it's left and fork 1 in its right
+//Here philosopher 4 have the fork 4 in it's left and fork 0 in its right
 
 pthread_mutex_t lock;
 
@@ -42,48 +42,30 @@ pthread_mutex_t lock;
 
 void process_of_picking_initiated(int n){
     pthread_mutex_lock(&lock);
-    printf("Philosopher %d has initiated the process of picking up the fork %d and fork %d and bowl and thus locked the lock\n", n,(n)%5,(n+1)%5);
+    printf("Philosopher %d has initiated the process of picking up the fork %d and fork %d and thus locked the lock\n", n,(n)%5,(n+1)%5);
 }
 
 void process_of_picking_finished(int n){
     pthread_mutex_unlock(&lock);
-    printf("Philosopher %d has finished the process of picking up the fork %d and fork %d and bowl and thus unlocked the lock\n", n,(n)%5,(n+1)%5);
+    printf("Philosopher %d has finished the process of picking up the fork %d and fork %d and thus unlocked the lock\n", n,(n)%5,(n+1)%5);
 }
 
 void postingforks(int n){
-    sem_post(&forks[n]);
-    sem_post(&forks[(n+1)%5]);
+    pthread_mutex_unlock(&forks[n]);
+    pthread_mutex_unlock(&forks[(n+1)%5]);
     printf("Philosopher %d has released fork %d and fork %d resources\n", n,(n)%5,(n+1)%5);
 }
 
-void postingbowls(int n){
-    sem_post(&bowls[bowls_phil[n]]);
-    printf("Philosopher %d has released bowl %d resource\n", n,bowls_phil[n]);
-}
-
 void eat(int n){
-    printf("Philosopher %d has started eating with forks %d and fork %d and bowl %d\n", n,(n)%5,(n+1)%5,bowls_phil[n]);
-    sleep(1);
-    printf("Philosopher %d has finished eating with fork %d and fork %d and bowl %d\n", n,(n)%5,(n+1)%5,bowls_phil[n]);
+    printf("Philosopher %d has started eating with forks %d and fork %d\n", n,(n)%5,(n+1)%5);
+    sleep(5);
+    printf("Philosopher %d has finished eating with fork %d and fork %d\n", n,(n)%5,(n+1)%5);
 }
 
 void waitingforks(int n){
-    sem_wait(&forks[n]);
-    sem_wait(&forks[(n+1) % 5]);
+    pthread_mutex_lock(&forks[n]);
+    pthread_mutex_lock(&forks[(n+1)%5]);
     printf("Philosopher %d has locked forks %d and fork %d resources for eating\n", n,(n)%5,(n+1)%5);
-}
-
-void waitingbowls(int n){
-    for (int i = 0; i < 2; i++){
-        ll check=-1;
-        sem_getvalue(&bowls[i], &check);
-        if (check == 1){
-            sem_wait(&bowls[i]);
-            printf("Philosopher %d has locked bowl %d resources for eating\n",n,i);
-            bowls_phil[n]=i;
-            return;
-        }
-    }
 }
 
 void think(int n){
@@ -95,25 +77,21 @@ void * dine(void * num){
         think(*(int *)num);
         process_of_picking_initiated(*(int *)num);
         waitingforks(*(int *)num);
-        waitingbowls(*(int *)num);
         process_of_picking_finished(*(int *)num);
         eat(*(int *)num);
         postingforks(*(int *)num);
-        postingbowls(*(int *)num);
     }
 } 
 
 int main(int argc,char * argv[]){
 	int philosophers[5];
+
 	pthread_t threadID[5];
-    pthread_mutex_init(&lock, NULL);
+
+    pthread_mutex_init(&lock,NULL);
 
 	for(ll i=0;i<5;i++){
-		sem_init(&forks[i],0,1);
-	}
-
-    for(ll i=0;i<2;i++){
-		sem_init(&bowls[i],0,1);
+		pthread_mutex_init(&forks[i],NULL);
 	}
 	
 	for(ll i=0;i<5;i++){
@@ -126,5 +104,6 @@ int main(int argc,char * argv[]){
 	for(ll i=0;i<5;i++){
 		pthread_join(threadID[i],NULL);
 	}
+    
     return 0;
 }

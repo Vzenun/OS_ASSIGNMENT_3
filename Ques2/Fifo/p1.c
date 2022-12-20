@@ -116,11 +116,6 @@ int main(int argc,char * argv[]){
         int file_descryptor1=open("testfile1",O_WRONLY);
         ll krr=i/5;
         copy_arr(b,string_arr,krr,5);
-        // printf("%s ",b[0]);
-        // printf("%s ",b[1]);
-        // printf("%s ",b[2]);
-        // printf("%s ",b[3]);
-        // printf("%s\n",b[4]);
         write(file_descryptor1, b, 5*(sizeof(char)*STRING_LEN));
         close(file_descryptor1);
         int file_descryptor2 = open("testfile2", O_WRONLY);

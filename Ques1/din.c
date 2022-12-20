@@ -1,4 +1,6 @@
-//Vidur Goel Question Number 2.b
+//Vidur Goel Question Number 1
+
+//Variant b of the part a using the semaphore
 
 #include <sys/wait.h>
 #include <sys/types.h>
@@ -25,13 +27,13 @@
 
 sem_t forks[5];
 
-//There are fork 1 and fork 2 and fork 3 and fork 4 and fork 5
+//There are fork 1 and fork 2 and fork 3 and fork 4 and fork 0
 
+//Here philosopher 0 have the fork 0 in it's left and fork 1 in its right
 //Here philosopher 1 have the fork 1 in it's left and fork 2 in its right
 //Here philosopher 2 have the fork 2 in it's left and fork 3 in its right
 //Here philosopher 3 have the fork 3 in it's left and fork 4 in its right
-//Here philosopher 4 have the fork 4 in it's left and fork 5 in its right
-//Here philosopher 5 have the fork 5 in it's left and fork 1 in its right
+//Here philosopher 4 have the fork 4 in it's left and fork 0 in its right
 
 sem_t lock;
 
