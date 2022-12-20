@@ -24,6 +24,9 @@
 
 # define ll int
 
+ll line;
+ll sector;
+struct sockaddr_un address;
 
 struct Data_Packet{
     char arr_of_string[5][10];
@@ -35,10 +38,11 @@ int timediff;
 #define BILLION 1000000000L;
 
 struct Data_Packet packet_generator(char arr[5][10],ll indexarr[5],ll high_index){
-    struct Data_Packet * pack= (struct Data_Packet *)malloc(sizeof(struct Data_Packet));
-    memcpy(pack->arr_of_index, indexarr, sizeof(int) * 5);
-    memcpy(pack->arr_of_string, arr, sizeof(char) * 5*10);
-    pack->high_index=high_index;
+    struct Data_Packet pack;
+    memcpy(pack.arr_of_index, indexarr, sizeof(int) * 5);
+    memcpy(pack.arr_of_string, arr, sizeof(char) * 5*10);
+    pack.high_index=high_index;
+    return pack;
 }
 
 char * String_Generator(ll length){
@@ -87,37 +91,34 @@ void copy_arr2(ll * a,ll i1,ll length){
 }
 
 int main(int argc,char * argv[]){
-    char string_arr[50][10];
-    srand(time(NULL));
-    for(ll i=0;i<50;i++){
-        strcpy(string_arr[i], String_Generator(10));
-    }
-    for(ll i=0;i<50;i++){
-        printf("%d ",i+1);
-        string_printing(string_arr[i]);
-    }
-    
-    int sockfd, trans_msg;
-    int ting=1;
-
-    struct sockaddr_un host_add;
-    struct sockaddr_un client_add;
-
-    if ((sockfd = socket(AF_UNIX, SOCK_STREAM, 0)) < 0) {
-        printf("Server socket creation error arsed");
-    }
-
-    host_add.sun_family = AF_UNIX;
-    strcpy(host_add.sun_path, ADDRESS);
-
-    if (bind(sockfd, (struct sockaddr *)&host_add, sizeof(struct sockaddr_un))){
-        perror("binding stream socket");
-        unlink(ADDRESS);
+    if((sector = socket(AF_UNIX, SOCK_STREAM, 0))<0){
+        printf("Error while opening a socket");
         exit(1);
     }
-    if (listen(sockfd, 3) < 0) {
-        throwPerrorandExit("Error While Trying to Listen to Socket");
-    }
+    address.sun_family = AF_UNIX;
+    strcpy(address.sun_path, "MYSOCKETFILE");
 
+    connect(sector, (struct sockaddr *)&address, sizeof(struct sockaddr_un));
+
+    ll i=0;
+    while(i<=49){
+        struct Data_Packet data;
+        read(sector,(void*)&data,sizeof(data));
+        // printf("\n%s ",data.arr_of_string[0]);
+        // printf("%s\n ",data.arr_of_string[1]);
+        // printf("%s ",data.arr_of_string[2]);
+        // printf("%s ",data.arr_of_string[3]);
+        // printf("%s\n",data.arr_of_string[4]);
+        printf("\n%d ",data.arr_of_index[0]);
+        printf("%d ",data.arr_of_index[1]);
+        printf("%d ",data.arr_of_index[2]);
+        printf("%d ",data.arr_of_index[3]);
+        printf("%d\n",data.arr_of_index[4]);
+        ll high = data.high_index;
+        write(sector,&high,sizeof(int));
+        i=high+1;
+    }
+    sleep(1);
+    close(sector);
     exit(0);
 }

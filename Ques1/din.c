@@ -25,7 +25,6 @@
 #include <netinet/in.h>
 # define ll int
 
-sem_t forks[5];
 
 //There are fork 1 and fork 2 and fork 3 and fork 4 and fork 0
 
@@ -35,25 +34,13 @@ sem_t forks[5];
 //Here philosopher 3 have the fork 3 in it's left and fork 4 in its right
 //Here philosopher 4 have the fork 4 in it's left and fork 0 in its right
 
-sem_t lock;
 
 //this locks works in such a way that if the one person is in process of picking 
 //up its fork then no other person can start their process of picking up their fork
 
-void process_of_picking_initiated(int n){
-    sem_wait(&lock);
-    printf("Philosopher %d has initiated the process of picking up the fork %d and fork %d and thus locked the lock\n", n,(n)%5,(n+1)%5);
-}
-
-void process_of_picking_finished(int n){
-    sem_post(&lock);
-    printf("Philosopher %d has finished the process of picking up the fork %d and fork %d and thus unlocked the lock\n", n,(n)%5,(n+1)%5);
-}
 
 void postingforks(int n){
-    sem_post(&forks[n]);
-    sem_post(&forks[(n+1)%5]);
-    printf("Philosopher %d has released fork %d and fork %d resources\n", n,(n)%5,(n+1)%5);
+    printf("Philosopher %d has released fork %d and fork %d as finished eating\n", n,(n)%5,(n+1)%5);
 }
 
 void eat(int n){
@@ -63,9 +50,7 @@ void eat(int n){
 }
 
 void waitingforks(int n){
-    sem_wait(&forks[n]);
-    sem_wait(&forks[(n+1)%5]);
-    printf("Philosopher %d has locked forks %d and fork %d resources for eating\n", n,(n)%5,(n+1)%5);
+    printf("Philosopher %d has picked forks %d and fork %d for eating\n", n,(n)%5,(n+1)%5);
 }
 
 void think(int n){
@@ -75,9 +60,7 @@ void think(int n){
 void * dine(void * num){
     while(1){
         think(*(int *)num);
-        process_of_picking_initiated(*(int *)num);
         waitingforks(*(int *)num);
-        process_of_picking_finished(*(int *)num);
         eat(*(int *)num);
         postingforks(*(int *)num);
     }
@@ -87,12 +70,6 @@ int main(int argc,char * argv[]){
 	int philosophers[5];
 
 	pthread_t threadID[5];
-
-    sem_init(&lock,0,1);
-
-	for(ll i=0;i<5;i++){
-		sem_init(&forks[i],0,1);
-	}
 	
 	for(ll i=0;i<5;i++){
 		philosophers[i] = i;
