@@ -22,11 +22,8 @@
 #include <sys/socket.h>
 #include <sys/un.h>
 
-
 # define ll int
-#define ADDRESS "MYSOCKETFILE"
 
-ll NUM_STRINGS=50;
 
 struct Data_Packet{
     char arr_of_string[5][10];
@@ -36,7 +33,6 @@ struct Data_Packet{
 
 int timediff;
 #define BILLION 1000000000L;
-// considering 01234566789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ
 
 struct Data_Packet packet_generator(char arr[5][10],ll indexarr[5],ll high_index){
     struct Data_Packet * pack= (struct Data_Packet *)malloc(sizeof(struct Data_Packet));
@@ -64,7 +60,7 @@ char * String_Generator(ll length){
 }
 
 void string_printing(char a[10]){
-    for(ll i=0;i<STRING_LEN;i++){
+    for(ll i=0;i<10;i++){
         printf("%c",a[i]);
     }
     printf("%c",'\n');
@@ -73,8 +69,8 @@ void string_printing(char a[10]){
 
 void copy_arr(char ** a,char ** b,ll i1,ll length){
     for(ll i=0;i<length;i++){
-        char * m=malloc((sizeof(char)*STRING_LEN));
-        for(ll j=0;j<STRING_LEN;j++){
+        char * m=malloc((sizeof(char)*10));
+        for(ll j=0;j<10;j++){
             m[j]=b[5*i1+i][j];
             printf("%c",b[5*i1+i][j]);
         }

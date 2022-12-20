@@ -64,21 +64,21 @@ char * String_Generator(ll length){
 }
 
 void string_printing(char a[10]){
-    for(ll i=0;i<STRING_LEN;i++){
+    for(ll i=0;i<10;i++){
         printf("%c",a[i]);
     }
     printf("%c",'\n');
     return;
 }
 
-void copy_arr(char ** a,char ** b,ll i1,ll length){
+void copy_arr(char a[5][10],char b[50][10],ll i1,ll length){
     for(ll i=0;i<length;i++){
-        char * m=malloc((sizeof(char)*STRING_LEN));
-        for(ll j=0;j<STRING_LEN;j++){
+        char m[10];
+        for(ll j=0;j<10;j++){
             m[j]=b[5*i1+i][j];
             printf("%c",b[5*i1+i][j]);
         }
-        a[i]=m;
+        memcpy(a[i], m, sizeof(char)*10);
         printf("\n");
     }
 }
@@ -120,5 +120,46 @@ int main(int argc,char * argv[]){
         exit(1);
     }
 
+    if (listen(sockfd, 3) < 0) {
+        throwPerrorandExit("Error in trying to listen to socket");
+    }
+
+    if ((msgsock = accept(sockfd, 0, 0)) < 0) {
+        throwPerrorandExit("Error While Trying to Accept Connection");
+    }
+
+    setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &opting, sizeof(opting));
+
+    char b[5][10];
+    ll b1[5];
+    ll i=0;
+
+    struct timespec start, stop;
+    clock_gettime( CLOCK_REALTIME, &start);
+    while(i<=49){
+        ll krr=i/5;
+        copy_arr(b,string_arr,krr,5);
+        copy_arr2(b1,i,5);
+        if (msgsock == -1){
+            printf("Socket error\n");
+        }
+        else{
+            struct Data_Packet data1 = packet_generator(b,b1,i+4);
+            write(msgsock, (void *)&data1, 52);
+            int receivedIndex;
+            read(msgsock,&receivedIndex,sizeof(int));
+            printf("The recieved index from P2 is %d\n",receivedIndex);
+            i=receivedIndex+1;
+        }
+    }
+    clock_gettime( CLOCK_REALTIME, &stop);
+    timediff=( stop.tv_sec - start.tv_sec );
+    int timediffn_s=( stop.tv_nsec - start.tv_nsec );
+    printf("%d\n",timediff);
+    printf("%d",timediffn_s);
+
+    close(msgsock);
+    unlink(ADDRESS);
+    close(sockfd);
     exit(0);
 }
